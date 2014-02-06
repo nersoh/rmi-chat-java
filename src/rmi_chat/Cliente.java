@@ -27,7 +27,6 @@ class Cliente extends UnicastRemoteObject implements ClienteInterface, ObserverI
 
     public void setChatGUI(ChatController chatGUI) {
         this.chatGUI = chatGUI;
-        System.out.println("GUI: " + chatGUI);
     }
 
     public List<Mensagem> getMensagens() throws RemoteException {
@@ -59,8 +58,9 @@ class Cliente extends UnicastRemoteObject implements ClienteInterface, ObserverI
     
     
     public void update(ChatInterface chat) throws RemoteException {
-        System.out.println("Atualizou.");
+        
         chatGUI.atualizarClientes(chat.getNomeClientes());
+        // Envia como parâmetro apenas a última mensagem adicionada ao chat
         chatGUI.atualizarMensagens(chat.getMensagens().get(chat.getMensagens().size() - 1 ));
         System.out.println(this.chatGUI);
     }

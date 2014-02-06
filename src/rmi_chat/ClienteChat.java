@@ -34,10 +34,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
     
     @Override
     public void atualizarMensagens(Mensagem msg) throws RemoteException {
-//        String msgsContent = "";
-//        for (Mensagem mensagem : msgs) {
-//            msgsContent += mensagem.getTexto() + "\n";
-//        }
+        // Exibe as mensagens Privadas para o remetente e destinatario da mesma
         if(msg.getTipo() == MensagemType.PRIVATE) {
             if(cliente.getNome().equals(msg.getRemetente()) ||
                     cliente.getNome().equals(msg.getDestinatario())) {
@@ -263,7 +260,6 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
             chat = (ChatInterface) Naming.lookup(url);
             System.out.println("CHAT -> " + chat);
             for (ClienteInterface cli : chat.getClientes()) {
-                //this.nomeClientes.add(cli.getNome());
                 if( cli.getNome().equals(nome) ) {
                    JOptionPane.showMessageDialog(null, "Cliente já cadastrado, escolha outro nome");
                    return; 
@@ -284,9 +280,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
              txtPorta.setEnabled(false);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
-            e.printStackTrace();
-            //System.out.println("Objeto Chat nao encontrado");
-            //JOptionPane.showMessageDialog(null, "Erro ao tentar conectar.");
+            JOptionPane.showMessageDialog(null, "Erro ao tentar conectar.");
         }
         
     }//GEN-LAST:event_logarHandler
@@ -296,9 +290,10 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
     }//GEN-LAST:event_txtNomeActionPerformed
 
     private void btnEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarActionPerformed
-        //txtAreaMensagens.append(txtMensagem.getText() + "\n");
+
         int usuarioIndex = listUsuarios.getSelectedIndex();
         try {
+            // Verifica ha algum usuario na lista p/ enviar mensagem privada
             if(this.listUsuarios.isSelectionEmpty()) {
                 System.out.println("NULLLLLOOOO");
                 this.chat.enviarMensagem( cliente.getNome(), null, txtMensagem.getText(), MensagemType.PUBLIC );
@@ -307,21 +302,15 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
                 String destinatario = (String) this.listUsuarios.getSelectedValue();
                 System.out.println("Destino:" + destinatario);
                 this.chat.enviarMensagem( cliente.getNome(), destinatario, txtMensagem.getText(), MensagemType.PRIVATE );
-                //System.out.println("INDEX>" + listUsuarios.getSelectedIndex());
                 listUsuarios.setSelectedIndex(usuarioIndex);
                 
             }
             
         } catch (RemoteException ex) {
             System.out.println("MSG ERRO: " + ex.getMessage());
-        }
-        
-        try {
-            //this.chat.enviarMensagemPublica(cliente.getNome(), txtMensagem.getText());
-            //System.out.println(this.listUsuarios.getSelectedValue());
-        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Mensagem nao enviada");
         }
+        // Limpa o campo de mensagem
         txtMensagem.setText("");
     }//GEN-LAST:event_btnEnviarActionPerformed
 
