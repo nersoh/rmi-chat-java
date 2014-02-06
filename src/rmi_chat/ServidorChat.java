@@ -144,7 +144,6 @@ public class ServidorChat extends javax.swing.JFrame {
             System.out.println(url);
             chat = new Chat();
             Naming.rebind(url, chat);
-            //JOptionPane.showMessageDialog(null, "Servidor Iniciado");
             lblStatus.setText("Servidor funcionando...");
         
         } catch (Exception e) {

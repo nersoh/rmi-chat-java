@@ -117,15 +117,18 @@ public class Chat extends UnicastRemoteObject implements ChatInterface {
     @Override
     public void removerCliente(String cli) throws RemoteException {
         try {
-            for (ClienteInterface cliente : clientes) {
-                if(cliente.getNome().equals(cli)) {
-                    System.out.println(cliente);
-                    //this.clientes.remove(cliente);
-                    this.nomeClientes.remove(cli);
-                    
-                    this.observers.remove(cliente);
-                    this.mensagens.add( new Mensagem(cli, null, null, MensagemType.LOGOUT) );
-                    this.notificarObservers();
+            //for (ClienteInterface cliente : clientes) {
+                //if(cliente.getNome().equals(cli)) {
+            if(!clientes.isEmpty()){
+                for(ClienteInterface cliente : clientes){
+                    if(cliente.getNome().equals(cli)){
+                        this.clientes.remove(cliente);
+                        this.nomeClientes.remove(cliente.getNome());
+                        this.mensagens.add( new Mensagem(cliente.getNome(), null, null, MensagemType.LOGOUT) );
+                        //this.observers.remove(cliente);
+                        this.notificarObservers();
+                        System.out.println("Excluido:" + cliente.getNome() + "\n");
+                    }
                 }
             }
             

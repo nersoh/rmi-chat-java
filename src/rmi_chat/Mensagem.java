@@ -54,7 +54,7 @@ public class Mensagem implements Serializable {
                 msg = "(" + remetente + ") escreveu: " + texto;
                 break;
             case PRIVATE:
-                msg = "(" + remetente + ") para " + destinatario + " escreveu: " + texto;
+                msg = "(" + remetente + ") para (" + destinatario + ") escreveu: " + texto;
                 break;
         }
         this.texto = msg;

@@ -137,6 +137,12 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
 
         lblMensagem.setText("Mensagem:");
 
+        txtMensagem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtMensagemActionPerformed(evt);
+            }
+        });
+
         btnEnviar.setText("enviar");
         btnEnviar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -343,11 +349,16 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
         try {
             
             //this.chat.removerObserver(cliente);
-            this.chat.removerCliente("");
+            System.out.println(cliente.getNome() + " SAIUUUU");
+            this.chat.removerCliente(cliente.getNome());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_formWindowClosing
+
+    private void txtMensagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMensagemActionPerformed
+        btnEnviarActionPerformed(evt);
+    }//GEN-LAST:event_txtMensagemActionPerformed
 
     /**
      * @param args the command line arguments
