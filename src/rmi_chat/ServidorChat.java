@@ -7,6 +7,7 @@
 package rmi_chat;
 
 import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import javax.swing.JOptionPane;
@@ -136,10 +137,16 @@ public class ServidorChat extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_btnPararActionPerformed
     public void startServer() {
+        if (System.getSecurityManager() == null) {  
+            //System.setSecurityManager(new RMISecurityManager());
+            //System.setProperty("java.security.policy", "c:\\RMI\\servidor.policy");
+            //System.out.println(System.getSecurityManager());
+        } 
         try {
-            LocateRegistry.createRegistry(1099);
-            String ip = txtIp.getText().equals("") ? "localhost" : txtIp.getText();
-            String porta = txtPorta.getText().equals("") ? "1099" : txtIp.getText();
+            //System.setSecurityManager(new RMISecurityManager());
+            String ip = txtIp.getText().equals("") ? "192.168.56.1" : txtIp.getText();
+            String porta = txtPorta.getText().equals("") ? "1099" : txtPorta.getText();
+            LocateRegistry.createRegistry(Integer.parseInt(porta));
             url = "rmi://" + ip + ":" + porta + "/Chat";
             System.out.println(url);
             chat = new Chat();

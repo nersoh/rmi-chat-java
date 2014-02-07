@@ -16,6 +16,8 @@ import rmi_chat.ClienteInterface;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.Serializable;
+import java.rmi.RMISecurityManager;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -258,12 +260,14 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
 
     private void logarHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logarHandler
         String nome = txtNome.getText();
-        String servidor = txtServidor.getText().equals("") ? "localhost" : txtServidor.getText();
+        String servidor = txtServidor.getText().equals("") ? "192.168.56.1" : txtServidor.getText();
         int porta = txtPorta.getText().equals("") ? 1099 : Integer.parseInt(txtPorta.getText());
+      
         try {
-            String url = "rmi://" + servidor + ":" + porta + "/" + "Chat";
+            String url = "rmi//" + servidor + ":" + porta + "/" + "Chat";
             System.out.println(url);
-            chat = (ChatInterface) Naming.lookup(url);
+            //chat = (ChatInterface) Naming.lookup(url);
+            chat = (ChatInterface) LocateRegistry.getRegistry(servidor, porta).lookup("Chat");
             System.out.println("CHAT -> " + chat);
             for (ClienteInterface cli : chat.getClientes()) {
                 if( cli.getNome().equals(nome) ) {
@@ -274,10 +278,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
              cliente = new Cliente(nome);
              cliente.setChatGUI(this);
              this.chat.registrarObserver(cliente);
-             //cliente.setDelegate(this);
-             //Naming.bind(cliente.getNome(), cliente);
              this.chat.registrarCliente(cliente.getNome());
-             //listUsuarios.setListData(chat.getNomeClientes().toArray());
              System.out.println(chat.getNomeClientes());
              JOptionPane.showMessageDialog(null, "Cliente Cadastrado");
              btnConectar.setEnabled(false);
@@ -286,7 +287,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
              txtPorta.setEnabled(false);
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Erro ao tentar conectar.");
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
         
     }//GEN-LAST:event_logarHandler
@@ -337,7 +338,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
     }//GEN-LAST:event_formMouseClicked
 
     private void btnDesconectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesconectarActionPerformed
-        this.dispose();
+        System.exit(0);
     }//GEN-LAST:event_btnDesconectarActionPerformed
 
     private void listUsuariosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listUsuariosValueChanged
@@ -349,8 +350,10 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
         try {
             
             //this.chat.removerObserver(cliente);
-            System.out.println(cliente.getNome() + " SAIUUUU");
-            this.chat.removerCliente(cliente.getNome());
+            //System.out.println(cliente.getNome() + " SAIUUUU");
+            if(this.chat != null)
+                this.chat.removerCliente(cliente.getNome());
+                this.chat.removerObserver(cliente);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

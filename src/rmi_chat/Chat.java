@@ -42,11 +42,7 @@ public class Chat extends UnicastRemoteObject implements ChatInterface {
     }
 
     public String registrarCliente(String cli) throws RemoteException {
-        //String url;
         try {
-            //url = "rmi://" + "localhost" + ":" + "1099" + "/Chat";
-            //ChatInterface chat = (ChatInterface) Naming.lookup(url);
-            //System.out.println(c);
             if(!clientes.isEmpty()){
                 for(ClienteInterface cliente : clientes){
                     if(cliente.getNome().equals(cli)){
@@ -57,14 +53,7 @@ public class Chat extends UnicastRemoteObject implements ChatInterface {
             ClienteInterface cliente = new Cliente(cli);
             this.clientes.add( cliente );
             this.nomeClientes.add( cli );
-            //this.registrarObserver( cliente );
             this.notificarObservers();
-            //setChanged();
-            //notifyObservers(this.getNomeClientes());
-            //this.clientes.add(new Cliente(cli));
-//                for(ClienteInterface cl : clientes){
-//                    cl.setClientesLogados(this.getClientesCadastrados());
-//                }
         } catch (Exception e) {
            System.out.println("Erro (chat): " + e.getMessage());
            e.printStackTrace();
@@ -116,24 +105,29 @@ public class Chat extends UnicastRemoteObject implements ChatInterface {
 
     @Override
     public void removerCliente(String cli) throws RemoteException {
+        // Verifica se o cliente existe setando uma flag que indica a exclusão.
         try {
-            //for (ClienteInterface cliente : clientes) {
-                //if(cliente.getNome().equals(cli)) {
             if(!clientes.isEmpty()){
+                boolean clienteEncontrado = false;
+                ClienteInterface clienteARemover = null;
                 for(ClienteInterface cliente : clientes){
                     if(cliente.getNome().equals(cli)){
-                        this.clientes.remove(cliente);
-                        this.nomeClientes.remove(cliente.getNome());
+                        clienteEncontrado = true;
+                        clienteARemover = cliente;
                         this.mensagens.add( new Mensagem(cliente.getNome(), null, null, MensagemType.LOGOUT) );
-                        //this.observers.remove(cliente);
-                        this.notificarObservers();
-                        System.out.println("Excluido:" + cliente.getNome() + "\n");
+                        
                     }
+                }
+                if(clienteEncontrado) {
+                    this.clientes.remove(clienteARemover);
+                    this.nomeClientes.remove(clienteARemover.getNome());
+                    System.out.println("Excluido:" + clienteARemover.hashCode() + "\n");
+                    this.notificarObservers();
                 }
             }
             
         } catch (Exception e) {
-            System.out.println("Erro (chat remove): " + e.getMessage());
+            e.printStackTrace();
         }
     }
 	
