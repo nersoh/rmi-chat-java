@@ -144,7 +144,7 @@ public class ServidorChat extends javax.swing.JFrame {
         } 
         try {
             //System.setSecurityManager(new RMISecurityManager());
-            String ip = txtIp.getText().equals("") ? "192.168.56.1" : txtIp.getText();
+            String ip = txtIp.getText().equals("") ? "localhost" : txtIp.getText();
             String porta = txtPorta.getText().equals("") ? "1099" : txtPorta.getText();
             LocateRegistry.createRegistry(Integer.parseInt(porta));
             url = "rmi://" + ip + ":" + porta + "/Chat";

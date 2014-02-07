@@ -33,6 +33,8 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
     public ChatInterface chat;
     public ClienteInterface cliente;
     public List<String> nomeClientes = new ArrayList<String>();
+    private static final int MAX_USUARIOS = 3;
+    private String usuarioSelected = null;
     
     @Override
     public void atualizarMensagens(Mensagem msg) throws RemoteException {
@@ -50,7 +52,9 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
 
     @Override
     public void atualizarClientes(List<String> clientes) throws RemoteException {
+        usuarioSelected = (String) listUsuarios.getSelectedValue();
         this.listUsuarios.setListData(clientes.toArray());
+        this.listUsuarios.setSelectedValue(usuarioSelected, true);
     }
 
 //    @Override
@@ -171,6 +175,12 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
 
         lblPorta.setText("Porta:");
 
+        txtServidor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtServidorActionPerformed(evt);
+            }
+        });
+
         jLabel1.setText("Mensagens");
 
         jLabel2.setText("Usuarios");
@@ -260,7 +270,7 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
 
     private void logarHandler(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logarHandler
         String nome = txtNome.getText();
-        String servidor = txtServidor.getText().equals("") ? "192.168.56.1" : txtServidor.getText();
+        String servidor = txtServidor.getText().equals("") ? "localhost" : txtServidor.getText();
         int porta = txtPorta.getText().equals("") ? 1099 : Integer.parseInt(txtPorta.getText());
       
         try {
@@ -275,7 +285,8 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
                    return; 
                 }
             }
-             cliente = new Cliente(nome);
+            if(!(this.chat.getClientes().size() >= MAX_USUARIOS)) {
+                cliente = new Cliente(nome);
              cliente.setChatGUI(this);
              this.chat.registrarObserver(cliente);
              this.chat.registrarCliente(cliente.getNome());
@@ -285,13 +296,32 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
              txtNome.setEnabled(false);
              txtServidor.setEnabled(false);
              txtPorta.setEnabled(false);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Número máximo de " + MAX_USUARIOS + " usuários conectados ");
+                return;
+            }
+            
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
         
     }//GEN-LAST:event_logarHandler
-
+    
+    private void desconectar() {
+        try {
+            
+            //this.chat.removerObserver(cliente);
+            //System.out.println(cliente.getNome() + " SAIUUUU");
+            if(this.chat != null)
+                this.chat.removerCliente(cliente.getNome());
+                this.chat.removerObserver(cliente);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        System.exit(0);
+    }
     private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
                 // TODO add your handling code here:
     }//GEN-LAST:event_txtNomeActionPerformed
@@ -302,12 +332,10 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
         try {
             // Verifica ha algum usuario na lista p/ enviar mensagem privada
             if(this.listUsuarios.isSelectionEmpty()) {
-                System.out.println("NULLLLLOOOO");
                 this.chat.enviarMensagem( cliente.getNome(), null, txtMensagem.getText(), MensagemType.PUBLIC );
             }
             else {
                 String destinatario = (String) this.listUsuarios.getSelectedValue();
-                System.out.println("Destino:" + destinatario);
                 this.chat.enviarMensagem( cliente.getNome(), destinatario, txtMensagem.getText(), MensagemType.PRIVATE );
                 listUsuarios.setSelectedIndex(usuarioIndex);
                 
@@ -338,30 +366,25 @@ public class ClienteChat extends javax.swing.JFrame implements ClienteInterface,
     }//GEN-LAST:event_formMouseClicked
 
     private void btnDesconectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDesconectarActionPerformed
-        System.exit(0);
+        this.desconectar();
     }//GEN-LAST:event_btnDesconectarActionPerformed
 
     private void listUsuariosValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listUsuariosValueChanged
         // TODO add your handling code here:
-        System.out.println(this.listUsuarios.getSelectedIndex());
+        //System.out.println(this.listUsuarios.getSelectedIndex());
     }//GEN-LAST:event_listUsuariosValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        try {
-            
-            //this.chat.removerObserver(cliente);
-            //System.out.println(cliente.getNome() + " SAIUUUU");
-            if(this.chat != null)
-                this.chat.removerCliente(cliente.getNome());
-                this.chat.removerObserver(cliente);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        this.desconectar();
     }//GEN-LAST:event_formWindowClosing
 
     private void txtMensagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMensagemActionPerformed
         btnEnviarActionPerformed(evt);
     }//GEN-LAST:event_txtMensagemActionPerformed
+
+    private void txtServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtServidorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtServidorActionPerformed
 
     /**
      * @param args the command line arguments
